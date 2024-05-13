@@ -30,6 +30,8 @@ public class NexAuth extends NexPlugin<NexAuth> implements UserDataHolder<NexAut
     private SessionManager sessionManager;
 
     private LogFilter logFilter;
+    
+    private ProxyServer proxyServer;
 
     @Override
     @NotNull
@@ -44,6 +46,8 @@ public class NexAuth extends NexPlugin<NexAuth> implements UserDataHolder<NexAut
 
         this.sessionManager = new SessionManager(this);
         this.sessionManager.setup();
+
+        this.proxyServer = ProxyServer.getInstance();
 
         ((Logger) LogManager.getRootLogger()).addFilter(this.logFilter = new LogFilter());
     }
@@ -134,4 +138,20 @@ public class NexAuth extends NexPlugin<NexAuth> implements UserDataHolder<NexAut
     public SessionManager getSessionManager() {
         return sessionManager;
     }
+    
+    public void sendMessageToVelocityServer(String messageType, String playerName) {
+        // Get a reference to the server you want to send the message to
+        RegisteredServer targetServer = proxyServer.getServer("your_target_server_name_here").orElse(null);
+        
+        if (targetServer != null) {
+            // Construct the message with type and player name
+            String message = messageType + ":" + playerName;
+            
+            // Send the message to the target server
+            targetServer.sendPluginMessage("your_channel_name_here", message.getBytes());
+        } else {
+            getLogger().warning("Target server not found!");
+        }
+    }
+
 }
