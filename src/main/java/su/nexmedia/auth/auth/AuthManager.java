@@ -346,7 +346,7 @@ public class AuthManager extends AbstractManager<NexAuth> {
             plugin.info("Player " + player.getName() + " logged in!");
         }
 
-        AuthPlayerLoginEvent loginEvent = new AuthPlayerLoginEvent(!Bukkit.isPrimaryThread(), player, authPlayer.getData());
+        AuthPlayerLoginEvent loginEvent = new AuthPlayerLoginEvent(!Bukkit.isPrimaryThread(), player, authPlayer.getData(), plugin);
         plugin.getPluginManager().callEvent(loginEvent);
 
         return true;

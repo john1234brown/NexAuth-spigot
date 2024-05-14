@@ -3,6 +3,9 @@ package su.nexmedia.auth;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 import org.jetbrains.annotations.NotNull;
+
+import com.dblockbuster.BungeeSender;
+
 import su.nexmedia.auth.auth.AuthManager;
 import su.nexmedia.auth.command.*;
 import su.nexmedia.auth.command.admin.ChangePasswordCommand;
@@ -31,12 +34,16 @@ public class NexAuth extends NexPlugin<NexAuth> implements UserDataHolder<NexAut
 
     private LogFilter logFilter;
     
-    private ProxyServer proxyServer;
+    private BungeeSender messageSender;
 
     @Override
     @NotNull
     protected NexAuth getSelf() {
         return this;
+    }
+    
+    public BungeeSender getMessageSender() {
+        return messageSender;
     }
 
     @Override
@@ -46,8 +53,8 @@ public class NexAuth extends NexPlugin<NexAuth> implements UserDataHolder<NexAut
 
         this.sessionManager = new SessionManager(this);
         this.sessionManager.setup();
-
-        this.proxyServer = ProxyServer.getInstance();
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "ambassador:main");
+        this.messageSender = new BungeeSender(this);
 
         ((Logger) LogManager.getRootLogger()).addFilter(this.logFilter = new LogFilter());
     }
@@ -138,20 +145,4 @@ public class NexAuth extends NexPlugin<NexAuth> implements UserDataHolder<NexAut
     public SessionManager getSessionManager() {
         return sessionManager;
     }
-    
-    public void sendMessageToVelocityServer(String messageType, String playerName) {
-        // Get a reference to the server you want to send the message to
-        RegisteredServer targetServer = proxyServer.getServer("your_target_server_name_here").orElse(null);
-        
-        if (targetServer != null) {
-            // Construct the message with type and player name
-            String message = messageType + ":" + playerName;
-            
-            // Send the message to the target server
-            targetServer.sendPluginMessage("your_channel_name_here", message.getBytes());
-        } else {
-            getLogger().warning("Target server not found!");
-        }
-    }
-
 }

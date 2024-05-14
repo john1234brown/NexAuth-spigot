@@ -4,6 +4,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
+
+import com.dblockbuster.BungeeSender;
+import com.dblockbuster.MessageType;
+
+import su.nexmedia.auth.NexAuth;
 import su.nexmedia.auth.data.impl.AuthUser;
 
 public class AuthPlayerLoginEvent extends Event {
@@ -12,11 +17,16 @@ public class AuthPlayerLoginEvent extends Event {
 
     private final Player   player;
     private final AuthUser user;
+    private final BungeeSender messageSender;
 
-    public AuthPlayerLoginEvent(boolean async, @NotNull Player player, @NotNull AuthUser user) {
+    public AuthPlayerLoginEvent(boolean async, @NotNull Player player, @NotNull AuthUser user, NexAuth plugin) {
         super(async);
         this.player = player;
         this.user = user;
+        this.messageSender = plugin.getMessageSender();
+        messageSender.sendMessageToBungee("mySubChannel", player.getName());
+        //messageSender.sendMessageToProxy(player, MessageType.LOGIN, player.getName());
+//        messageSender.sendMessageToBungee(player.getName(), getEventName(), getEventName());
     }
 
     @NotNull
